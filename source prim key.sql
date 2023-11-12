@@ -1,23 +1,3 @@
-version: 2
-
-sources:
-  - name: raw
-    schema: gz_raw_data
-    description: "raw data exo 2 dbt 1, circle sportswear"
-    tables:
-      - name: product
-        identifier: raw_gz_product
-        description: product_id et prix achat
-      - name: sales
-        identifier: raw_gz_sales
-        description: date_date, orders_id, pdt_id, revenue, quantity
-      - name: ship
-        identifier: raw_gz_ship
-        description: orders_id, shipping_fee, shipping_fee_1, logCost, ship_cost
-        tests:
-          - unique:
-              column_name: "(orders_id || '-' || products_id)"
-
 models: 
   - name: product
     columns:
