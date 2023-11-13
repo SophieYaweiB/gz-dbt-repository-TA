@@ -15,6 +15,11 @@ sources:
               - unique
               - not_null
       - name: sales
+        freshness:
+          warn_after:
+            count: 90
+            period: day
+        loaded_at_field: 'CAST (date_date AS TIMESTAMP)'
         identifier: raw_gz_sales
         description: date_date, orders_id, pdt_id, revenue, quantity
         columns:
@@ -26,6 +31,7 @@ sources:
         tests:
           - unique:
               column_name: "(orders_id || '-' || pdt_id)"
+              
       - name: ship
         identifier: raw_gz_ship
         description: orders_id, shipping_fee, shipping_fee_1, logCost, ship_cost
@@ -35,3 +41,30 @@ sources:
             tests:
               - unique
               - not_null
+
+models: 
+  - name: stg_raw__product
+    columns:
+      - name: products_id
+        description: prim key test of table product
+        tests:
+          - unique
+          - not_null
+  - name: stg_raw__ship
+    columns:
+      - name: orders_id
+        description: prim key test of table ship
+        tests:
+          - unique
+          - not_null            
+           - not_null
+  - name: stg_raw__sales
+    columns:
+      - name: date_date
+      - name: orders_id
+      - name: products_id
+      - name: revenue
+      - name: quantity
+    tests:
+      - unique:
+              column_name: "(orders_id || '-' || products_id)"
