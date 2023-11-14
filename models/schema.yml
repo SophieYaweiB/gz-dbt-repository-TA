@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: raw
     schema: gz_raw_data
-    description: "raw data exo 2 dbt 1, circle sportswear"
+    description: "raw data exo 2 dbt 1, Greenweez"
     tables:
       - name: product
         identifier: raw_gz_product
@@ -15,11 +15,6 @@ sources:
               - unique
               - not_null
       - name: sales
-        freshness:
-          warn_after:
-            count: 90
-            period: day
-        loaded_at_field: 'CAST (date_date AS TIMESTAMP)'
         identifier: raw_gz_sales
         description: date_date, orders_id, pdt_id, revenue, quantity
         columns:
@@ -31,7 +26,12 @@ sources:
         tests:
           - unique:
               column_name: "(orders_id || '-' || pdt_id)"
-              
+        freshness:
+          warn_after:
+            count: 90
+            period: day
+        loaded_at_field: 'CAST (date_date AS TIMESTAMP)'     
+        
       - name: ship
         identifier: raw_gz_ship
         description: orders_id, shipping_fee, shipping_fee_1, logCost, ship_cost
@@ -68,7 +68,17 @@ models:
     tests:
       - unique:
               column_name: "(orders_id || '-' || products_id)"
+            
+  - name: stg_raw_product
+  - name: stg_raw_sales
+  - name: stg_raw_ship
   - name: int_sales_margin
+    description: margin calcultation per order line / product sale
+    columns:
+      - name: margin
+        description: Margin = Revenue - Purchase_cost
+      - name: Purchase_cost
+        description: Purchase_cost = Quantity * Purchase_price 
     tests:
       - unique:
           column_name: "(orders_id || '-' || products_id)"
@@ -81,16 +91,6 @@ models:
             - date_date
             - revenue
             - quantity
-  - name: stg_raw_product
-  - name: stg_raw_sales
-  - name: stg_raw_ship
-  - name: int_sales_margin
-    description: margin calcultation per order line / product sale
-    columns:
-      - name: margin
-        description: Margin = Revenue - Purchase_cost
-      - name: Purchase_cost
-        description: Purchase_cost = Quantity * Purchase_price 
   - name: int_orders_margin
     description: margin calcultation per order 
     columns:
