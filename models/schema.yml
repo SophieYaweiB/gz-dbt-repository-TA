@@ -41,6 +41,18 @@ sources:
             tests:
               - unique
               - not_null
+      - name: adwords
+        identifier: raw_gz_adwords
+        description: expenses on g-ads campaign
+      - name: bing
+        identifier: raw_gz_bing
+        description: expenses bing campaign
+      - name: criteo
+        identifier: raw_gz_criteo
+        description: expenses on criteo campaign
+      - name: facebook
+        identifier: raw_gz_facebook
+        description: expenses on facebook campaign
 
 models: 
   - name: stg_raw__product
@@ -91,6 +103,7 @@ models:
             - date_date
             - revenue
             - quantity
+
   - name: int_orders_margin
     description: margin calcultation per order 
     columns:
@@ -106,10 +119,44 @@ models:
         description: sum of revenue per order 
       - name: quantity
         description: sum of quantity per order
+
   - name: int_orders_operational
     description: operational margin calcultation per order 
     columns:
       - name: operational_margin 
         description: Operational margin = margin + shipping fee - log_cost - ship_cost
+
   - name: finance_days
     description: finance calculation per days
+
+  - name: int_all_campaigns
+    description: data from all campaigns
+    tests:
+      - unique:
+          column_name: "(campaign_key || '-' || date_date)"
+      - not_null:
+          column_name:
+            - paid_source
+            - campaign_name
+  
+  - name:  int_campaigns_day
+    description: data from all campaigns per day
+    columns:
+      - name: date_date
+        description: prim key test
+        tests:
+          - unique
+          - not_null
+  
+  - name: finance_campaigns_day
+    description: global kpi
+    columns:
+      - name: ads_margin
+        description: operational_margin - ads_cost
+      - name: average_basket
+        description: average basket cost for each day 
+    tests:
+      - not_null:
+          column_name:
+            - ads_margin
+            - average_basket
